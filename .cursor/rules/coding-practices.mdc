@@ -1,0 +1,26 @@
+---
+description: Lint, typing, and backend/mobile design practices
+alwaysApply: true
+---
+
+# Coding practices
+
+## Backend (Python)
+
+- Ruff for lint + format; MyPy in strict mode on `src/soulwalker`.
+- Type every public function. Prefer explicit errors (`ValueError`, domain exceptions) over returning `None` for failures.
+- Small modules. One domain concern per service. No god-services, no logic in FastAPI routers.
+- Pydantic schemas at the API boundary; SQLAlchemy models stay in `models/`.
+- Config via environment variables (`pydantic-settings`). Never commit secrets.
+
+## Flutter
+
+- Strict `analysis_options.yaml`. `prefer_const_constructors`, avoid `dynamic`, avoid `print`.
+- Functional widgets; extract logic into domain classes / notifiers. No business rules in `build()`.
+- Use `TermKey` / `TerminologyResolver` for mythos strings. Engine identifiers stay generic.
+
+## Shared
+
+- Names: `snake_case` Python, `camelCase` Dart members, `PascalCase` types.
+- Do not catch-and-swallow. Log with context, then re-raise or map to an HTTP/UI error.
+- Keep diffs focused. Do not add comments that only narrate what the code already says.

@@ -1,0 +1,25 @@
+- fragment_key: f_au_001
+  trigger_value: 1
+  pillar_tags: [the_weight]
+  rarity_weight: 1
+  text: The first Waking sits in the palm like a folded letter. It is heavier than its size. You were not asked to sign for it.
+- fragment_key: f_au_002
+  trigger_value: 1
+  pillar_tags: [the_watcher]
+  rarity_weight: 1
+  text: New linen, still creased. When you put it on, the room's corners stop pretending they are empty.
+- fragment_key: f_au_003
+  trigger_value: 2
+  pillar_tags: [the_hollow_hour]
+  rarity_weight: 1
+  text: This Waking has the hour inside it. Not a clock — the particular quiet that happens when numbers stop being useful.
+- fragment_key: f_au_004
+  trigger_value: 2
+  pillar_tags: [the_second_face]
+  rarity_weight: 1
+  text: The stitching on these Linens is someone else's habit. You recognise the pattern from a sleeve you do not own.
+- fragment_key: f_au_005
+  trigger_value: 3
+  pillar_tags: [the_long_blink]
+  rarity_weight: 1
+  text: You take the new Waking and lose a second. The second is still nearby. It will catch up when you stand still, which you should not.

@@ -1,0 +1,25 @@
+- fragment_key: f_mk_001
+  trigger_value: 3
+  pillar_tags: [the_weight]
+  rarity_weight: 1
+  text: Three kilometres, and the Weight doesn't crush you. It just reminds you what your legs are for, in case you forgot.
+- fragment_key: f_mk_002
+  trigger_value: 3
+  pillar_tags: [the_watcher]
+  rarity_weight: 1
+  text: At three kilometres the pavement stops feeling like ground and starts feeling like a held note. Something at the edge of the path keeps time with you.
+- fragment_key: f_mk_003
+  trigger_value: 5
+  pillar_tags: [the_long_blink]
+  rarity_weight: 1
+  text: Five kilometres fold into one long indoor minute. Your shadow arrives a step late, then pretends it was always there.
+- fragment_key: f_mk_004
+  trigger_value: 5
+  pillar_tags: [the_hollow_hour]
+  rarity_weight: 1
+  text: Five kilometres and the hour thins. Streetlights look like they were lit for someone who has not gotten out of bed yet.
+- fragment_key: f_mk_005
+  trigger_value: 5
+  pillar_tags: [the_second_face]
+  rarity_weight: 1
+  text: A walker passes you at five kilometres. Their face is almost a neighbour's. They do not turn, which is how you know it was close.

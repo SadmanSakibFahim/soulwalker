@@ -1,0 +1,25 @@
+- fragment_key: f_bk_001
+  trigger_value: 1
+  pillar_tags: [the_watcher]
+  rarity_weight: 1
+  text: The presence at the foot of the bed thins. You do not celebrate. You put your shoes on, because that is how mornings are proven.
+- fragment_key: f_bk_002
+  trigger_value: 1
+  pillar_tags: [the_weight]
+  rarity_weight: 1
+  text: Chest-light, for now. The Weight has set itself down on the chair like a coat. It will wait. You walk anyway.
+- fragment_key: f_bk_003
+  trigger_value: 1
+  pillar_tags: [the_hollow_hour]
+  rarity_weight: 1
+  text: The Long Night lets go of one of its hours. You keep it in your pocket as a habit, not a trophy.
+- fragment_key: f_bk_004
+  trigger_value: 1
+  pillar_tags: [the_second_face]
+  rarity_weight: 1
+  text: The familiar-not-familiar face turns toward the wall. You do not look to see if it still has your mouth.
+- fragment_key: f_bk_005
+  trigger_value: 1
+  pillar_tags: [the_long_blink]
+  rarity_weight: 1
+  text: Seconds become seconds again. For a little while the street has a duration you can spend.

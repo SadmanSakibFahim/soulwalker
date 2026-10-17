@@ -1,0 +1,32 @@
+---
+description: Production architecture — Flutter + FastAPI + PostgreSQL, world-agnostic engine
+alwaysApply: true
+---
+
+# Architecture
+
+Stack: Flutter (Impeller) mobile client, FastAPI backend, PostgreSQL. No Unity/Godot. No Firebase.
+
+## World-agnostic engine
+
+Mechanics (steps, armaments, checkpoints, streaks, affliction stubs) deal only in **generic keys and numbers**. A world is a content bundle (terminology + lore + art theme) layered on top. Never hardcode fictional names in engine, API, or widgets.
+
+Resolve every user-facing mythos string through the terminology table at render time:
+
+```dart
+// BAD
+Text('Rest at a Held Breath');
+
+// GOOD
+Text('Rest at ${terms.resolve(TermKey.checkpointName)}');
+```
+
+## Layers
+
+- Backend: `api/` (thin routers) → `domain/` (pure logic) → `infra/` / `models/` (DB). No business logic in routers.
+- Mobile: `presentation/` → `domain/` → `data/`. No HTTP or SQL in widgets.
+- Content lives in `content/worlds/` as YAML; seed into Postgres. Engine never imports YAML directly for runtime decisions if the DB is the source of truth.
+
+## IP
+
+Do not use, even as placeholders in code or comments: Tarnished, Scarlet Rot, Site of Grace, Bloodstain, or any FromSoftware proper noun. Generic keys: `checkpoint`, `deathMarker`, `affliction`, `summons`.

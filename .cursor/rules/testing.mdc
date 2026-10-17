@@ -1,0 +1,22 @@
+---
+description: Tests live in dedicated folders; cover domain and API
+alwaysApply: true
+---
+
+# Testing
+
+All tests live in dedicated trees. Never colocate `test_*.py` or `*_test.dart` next to production source.
+
+| Tree | Role |
+|---|---|
+| `backend/tests/unit/` | Domain services, lint, resolvers — no DB |
+| `backend/tests/integration/` | API + Postgres |
+| `apps/mobile/test/` | Dart unit + widget tests |
+
+Rules:
+
+- Every new domain service and API route gets tests in the same session.
+- Unit tests must not require Docker. Integration tests may use Postgres from `docker-compose`.
+- Prefer testing behavior (inputs → outputs) over mocking internals.
+- Flutter: test `TerminologyResolver` and screens that render resolved terms.
+- Run `pytest` from `backend/` and `flutter test` from `apps/mobile/` before considering a slice done.

@@ -1,0 +1,25 @@
+- fragment_key: f_bd_001
+  trigger_value: 1
+  pillar_tags: [the_watcher]
+  rarity_weight: 1
+  text: You missed a day. The presence did not. A Failed Waking marks the distance you did not finish, like a shoe left in the hall.
+- fragment_key: f_bd_002
+  trigger_value: 1
+  pillar_tags: [the_weight]
+  rarity_weight: 1
+  text: "The streak ends the way a held breath ends: not with drama, with air. The Weight sits back down on your ribs, patient."
+- fragment_key: f_bd_003
+  trigger_value: 1
+  pillar_tags: [the_hollow_hour]
+  rarity_weight: 1
+  text: The hour you were keeping unspools. You are returned to the last place you stood still on purpose.
+- fragment_key: f_bd_004
+  trigger_value: 1
+  pillar_tags: [the_second_face]
+  rarity_weight: 1
+  text: Someone who looks like you is already sitting on the bed. They look disappointed in a courteous way. You go back to the last Held Breath.
+- fragment_key: f_bd_005
+  trigger_value: 1
+  pillar_tags: [the_long_blink]
+  rarity_weight: 1
+  text: Time jumps. You did not travel. The attempt is simply no longer in this minute. Your build remains; the night does not.

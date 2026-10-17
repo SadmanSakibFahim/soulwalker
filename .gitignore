@@ -1,0 +1,37 @@
+# Cursor scratch — keep rules and handover tracked
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
+!.cursor/handover_log.md
+
+# Python
+backend/.venv/
+backend/**/__pycache__/
+backend/**/*.py[cod]
+backend/.mypy_cache/
+backend/.ruff_cache/
+backend/.pytest_cache/
+*.egg-info/
+.coverage
+htmlcov/
+
+# Flutter
+apps/mobile/.dart_tool/
+apps/mobile/.flutter-plugins
+apps/mobile/.flutter-plugins-dependencies
+apps/mobile/.packages
+apps/mobile/build/
+apps/mobile/.idea/
+apps/mobile/*.iml
+apps/mobile/ios/Pods/
+apps/mobile/ios/.symlinks/
+apps/mobile/android/.gradle/
+apps/mobile/android/local.properties
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# OS
+.DS_Store

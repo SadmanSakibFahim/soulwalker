@@ -1,0 +1,28 @@
+---
+description: Handover log is the source of truth for codebase state
+alwaysApply: true
+---
+
+# Handover log
+
+[`.cursor/handover_log.md`](.cursor/handover_log.md) is the source of truth for **current codebase state**.
+
+## Start of session
+
+1. Read `.cursor/handover_log.md` first.
+2. Read only the canonical files it lists for the task.
+3. Do **not** explore or read the whole repository to rediscover structure, schema, or conventions.
+
+## End of every session (mandatory)
+
+Update the log before finishing. Record:
+
+- What landed (modules, migrations, content)
+- Latest Alembic revision
+- How to run lint/tests
+- Next actions (ordered)
+- Canonical file pointers for the next agent
+
+If the log disagrees with the tree, **fix the log** — do not silently ignore it.
+
+Product spec: `docs/specs/v1.md`. Do not treat chat history as state.

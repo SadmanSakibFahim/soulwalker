@@ -1,0 +1,25 @@
+- fragment_key: f_af_001
+  trigger_value: 1
+  pillar_tags: [the_weight]
+  rarity_weight: 1
+  text: You say the Weight has struck. The night, to its credit, pauses the count. Honesty is part of the architecture.
+- fragment_key: f_af_002
+  trigger_value: 1
+  pillar_tags: [the_watcher]
+  rarity_weight: 1
+  text: An affliction named is an affliction seated. The Watcher stays, but the timer is polite enough to wait.
+- fragment_key: f_af_003
+  trigger_value: 1
+  pillar_tags: [the_hollow_hour]
+  rarity_weight: 1
+  text: The Hollow Hour does not break the streak. It holds it the way a closed door holds a room.
+- fragment_key: f_af_004
+  trigger_value: 0
+  pillar_tags: [the_long_blink]
+  rarity_weight: 1
+  text: The Weight lifts by a finger-width. Minutes remember how to line up. You may walk again when the body agrees.
+- fragment_key: f_af_005
+  trigger_value: 0
+  pillar_tags: [the_second_face]
+  rarity_weight: 1
+  text: You report that you are unstruck. The night takes this as a statement, not a dare.

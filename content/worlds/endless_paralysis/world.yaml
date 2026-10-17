@@ -1,0 +1,16 @@
+world_key: w_endless_paralysis
+name: The Endless Paralysis
+tone: eerie, oneiric, restrained — not jump-scare horror
+art_theme: endless_paralysis_palette
+active: true
+pillars:
+  - key: the_watcher
+    sort_order: 1
+  - key: the_weight
+    sort_order: 2
+  - key: the_hollow_hour
+    sort_order: 3
+  - key: the_second_face
+    sort_order: 4
+  - key: the_long_blink
+    sort_order: 5

@@ -1,0 +1,25 @@
+- fragment_key: f_cr_001
+  trigger_value: 1
+  pillar_tags: [the_weight]
+  rarity_weight: 1
+  text: You return to a Held Breath. The banked distance is still yours. The night is not generous; it is merely exact.
+- fragment_key: f_cr_002
+  trigger_value: 1
+  pillar_tags: [the_watcher]
+  rarity_weight: 1
+  text: The last safe stillness is where you left it. Nothing has sat in it, which is a kind of mercy.
+- fragment_key: f_cr_003
+  trigger_value: 1
+  pillar_tags: [the_hollow_hour]
+  rarity_weight: 1
+  text: Coming back, the hour is smaller. You can fit inside it. That is the point of a Held Breath.
+- fragment_key: f_cr_004
+  trigger_value: 1
+  pillar_tags: [the_second_face]
+  rarity_weight: 1
+  text: The familiar-not-familiar face is not here. The checkpoint is empty on purpose. You fill it with standing.
+- fragment_key: f_cr_005
+  trigger_value: 1
+  pillar_tags: [the_long_blink]
+  rarity_weight: 1
+  text: You stand still and the missing seconds file back in. Not all of them. Enough to begin the count again.
