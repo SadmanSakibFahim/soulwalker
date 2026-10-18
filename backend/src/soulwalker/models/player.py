@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
     BigInteger,
+    Date,
     DateTime,
     ForeignKey,
     Identity,
@@ -15,7 +16,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from soulwalker.enums import AfflictionStatus
+from soulwalker.enums import AfflictionStatus, CheckpointReason
 from soulwalker.models.base import Base, TimestampMixin
 from soulwalker.models.lore import LoreFragment
 from soulwalker.models.world import World
@@ -37,6 +38,8 @@ class Player(TimestampMixin, Base):
     world_progress: Mapped[list[PlayerWorldProgress]] = relationship(
         back_populates="player",
     )
+    armaments: Mapped[list[PlayerArmament]] = relationship(back_populates="player")
+    checkpoints: Mapped[list[PlayerCheckpoint]] = relationship(back_populates="player")
 
 
 class PlayerStats(Base):
@@ -61,6 +64,11 @@ class PlayerStats(Base):
         nullable=False,
         default=int(AfflictionStatus.NONE),
     )
+    today_distance_m: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
+    progress_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    last_qualified_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    encounter_attempt: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=1)
+    encounters_completed: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=0)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -119,3 +127,52 @@ class PlayerSeenFragment(Base):
 
     progress: Mapped[PlayerWorldProgress] = relationship(back_populates="seen_fragments")
     fragment: Mapped[LoreFragment] = relationship()
+
+
+class PlayerArmament(Base):
+    """Owned armament tier. World switch must not move these rows."""
+
+    __tablename__ = "player_armaments"
+    __table_args__ = (UniqueConstraint("player_id", "tier"),)
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    player_id: Mapped[int] = mapped_column(
+        ForeignKey("players.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    tier: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    unlocked_at_distance_m: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    unlocked_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+
+    player: Mapped[Player] = relationship(back_populates="armaments")
+
+
+class PlayerCheckpoint(Base):
+    """Rest point. Death does not roll distance or armaments back to an older row."""
+
+    __tablename__ = "player_checkpoints"
+
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    player_id: Mapped[int] = mapped_column(
+        ForeignKey("players.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    reason: Mapped[int] = mapped_column(
+        SmallInteger,
+        nullable=False,
+        default=int(CheckpointReason.ORIGIN),
+    )
+    banked_distance_m: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    encounters_completed: Mapped[int] = mapped_column(SmallInteger, nullable=False, default=0)
+    banked_on: Mapped[date] = mapped_column(Date, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
+
+    player: Mapped[Player] = relationship(back_populates="checkpoints")

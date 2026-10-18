@@ -4,7 +4,7 @@ import 'data/asset_terminology_repository.dart';
 import 'dev/dev_flags.dart';
 import 'dev/dev_host.dart';
 import 'domain/terminology_resolver.dart';
-import 'presentation/app_shell.dart';
+import 'presentation/play_host.dart';
 import 'presentation/theme.dart';
 
 class SoulwalkerApp extends StatelessWidget {
@@ -41,7 +41,7 @@ class SoulwalkerApp extends StatelessWidget {
           if (kSoulwalkerDev) {
             return DevHost(terms: terms);
           }
-          return AppShell(terms: terms);
+          return PlayHost(terms: terms);
         },
       ),
     );

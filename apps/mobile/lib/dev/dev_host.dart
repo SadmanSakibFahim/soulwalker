@@ -5,9 +5,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../data/health_source.dart';
+import '../data/motion_source.dart';
+import '../data/walk_store.dart';
 import '../domain/terminology_resolver.dart';
 import '../presentation/app_shell.dart';
+import '../presentation/health_controller.dart';
 import '../presentation/theme.dart';
+import '../presentation/walk_controller.dart';
 import 'dev_flags.dart';
 import 'dev_session.dart';
 
@@ -20,20 +25,63 @@ class DevHost extends StatefulWidget {
   State<DevHost> createState() => _DevHostState();
 }
 
-class _DevHostState extends State<DevHost> {
+class _DevHostState extends State<DevHost> with WidgetsBindingObserver {
   late final DevSession _session = DevSession();
+  late final WalkController _walk = WalkController(
+    motion: const ChannelMotionSource(),
+    store: PrefsWalkStore(),
+    onLocalDelta: _session.noteLocalMeters,
+    onServerDelta: _session.noteServerMeters,
+  );
+  late final HealthController _health = HealthController(
+    health: const ChannelHealthSource(),
+    progressDate: () => _session.progress.progressDate,
+    onDays: _session.syncActivity,
+  );
+  late final Listenable _ticks = Listenable.merge(<Listenable>[_session, _walk, _health]);
   bool _panelOpen = true;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    unawaited(_walk.restore());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_walk.sync());
+      if (_session.apiConnected) {
+        unawaited(_health.sync());
+      }
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _walk.dispose();
+    _health.dispose();
     _session.dispose();
     super.dispose();
+  }
+
+  Future<void> _connect() async {
+    await _session.connect();
+    await _walk.sync();
+    await _health.sync();
+  }
+
+  Future<void> _reset() async {
+    await _walk.discard();
+    _session.reset();
   }
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: _session,
+      listenable: _ticks,
       builder: (BuildContext context, Widget? _) {
         return Stack(
           children: <Widget>[
@@ -44,6 +92,13 @@ class _DevHostState extends State<DevHost> {
                   terms: widget.terms,
                   progress: _session.progress,
                   markers: _session.markers,
+                  walking: _walk.walking,
+                  walkNote: _walk.note,
+                  healthNote: _health.note,
+                  onSyncHealth: () => unawaited(_health.sync()),
+                  onStartWalk: () => unawaited(_walk.start()),
+                  onSyncWalk: () => unawaited(_walk.sync()),
+                  onEndWalk: () => unawaited(_walk.end()),
                 ),
               ),
             ),
@@ -74,7 +129,11 @@ class _DevHostState extends State<DevHost> {
               Positioned(
                 right: 12,
                 bottom: 96,
-                child: _DevPanel(session: _session),
+                child: _DevPanel(
+                  session: _session,
+                  onConnect: _connect,
+                  onReset: _reset,
+                ),
               ),
             Positioned(
               right: 16,
@@ -94,9 +153,15 @@ class _DevHostState extends State<DevHost> {
 }
 
 class _DevPanel extends StatelessWidget {
-  const _DevPanel({required this.session});
+  const _DevPanel({
+    required this.session,
+    required this.onConnect,
+    required this.onReset,
+  });
 
   final DevSession session;
+  final Future<void> Function() onConnect;
+  final Future<void> Function() onReset;
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +193,7 @@ class _DevPanel extends StatelessWidget {
                 children: <Widget>[
                   _HackButton(
                     label: 'Connect API',
-                    onTap: () => unawaited(session.connect()),
+                    onTap: () => unawaited(onConnect()),
                   ),
                   _HackButton(
                     label: '+1 km',
@@ -143,15 +208,15 @@ class _DevPanel extends StatelessWidget {
                     onTap: () => unawaited(session.addMeters(5000)),
                   ),
                   _HackButton(
-                    label: '+1 streak day',
-                    onTap: () => unawaited(session.addStreakDay()),
+                    label: 'Close day',
+                    onTap: () => unawaited(session.closeDay()),
                   ),
                   _HackButton(
                     label: 'Pull lore',
                     onTap: () => unawaited(session.pullLore()),
                   ),
                   _HackButton(label: 'Drop death marker', onTap: session.dropDeathMarker),
-                  _HackButton(label: 'Reset local', onTap: session.reset),
+                  _HackButton(label: 'Reset local', onTap: () => unawaited(onReset())),
                 ],
               ),
               if (session.lastLore != null) ...<Widget>[

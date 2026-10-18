@@ -25,6 +25,32 @@ void main() {
     await tester.tap(find.text('+1 km'));
     await tester.pump();
     expect(find.textContaining('Walked 1.0 km'), findsWidgets);
+    expect(find.text('Wakings'), findsNothing);
+  });
+
+  testWidgets('five kilometres counts the day and unlocks both armaments',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(MaterialApp(home: DevHost(terms: _terms())));
+    await tester.tap(find.text('+5 km'));
+    await tester.pump();
+    expect(find.textContaining('day 1 of 5'), findsOneWidget);
+    expect(find.text('Wakings'), findsOneWidget);
+    expect(find.text('Linens'), findsOneWidget);
+  });
+
+  testWidgets('closing a missed day ends the attempt and keeps distance',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(MaterialApp(home: DevHost(terms: _terms())));
+    await tester.tap(find.text('+5 km'));
+    await tester.pump();
+    await tester.tap(find.text('Close day'));
+    await tester.pump();
+    await tester.tap(find.text('Close day'));
+    await tester.pump();
+    expect(find.textContaining('Walked 5.0 km'), findsWidgets);
+    expect(find.textContaining('attempt 2'), findsOneWidget);
+    expect(find.textContaining('The attempt ended'), findsOneWidget);
+    expect(find.text('Linens'), findsOneWidget);
   });
 
   testWidgets('death marker screen lists fixed-type attempts', (WidgetTester tester) async {

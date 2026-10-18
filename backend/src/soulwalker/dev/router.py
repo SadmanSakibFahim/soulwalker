@@ -6,32 +6,26 @@ Mounted from main.py only when Settings.dev_mode is true.
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from sqlalchemy import delete, select
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from soulwalker.api.deps import CurrentPlayer, SessionDep
+from soulwalker.api.v1.progress import to_progress_response
 from soulwalker.enums import TriggerType
 from soulwalker.models.player import Player, PlayerSeenFragment, PlayerStats, PlayerWorldProgress
 from soulwalker.models.world import World
-from soulwalker.schemas.auth import PlayerResponse, TokenResponse
+from soulwalker.schemas.auth import TokenResponse
 from soulwalker.schemas.lore import LoreFragmentResponse
+from soulwalker.schemas.progress import DistanceRequest, ProgressResponse
 from soulwalker.services.auth import create_access_token, hash_password
 from soulwalker.services.lore import LoreDeliveryError, deliver_lore
+from soulwalker.services.progress import close_progress_day, grant_distance
 
 DEV_DISPLAY_NAME = "devwalker"
 DEV_PASSWORD = "devdevdev8"
 
 router = APIRouter(prefix="/v1/dev", tags=["dev"])
-
-
-class GrantDistanceRequest(BaseModel):
-    meters: int = Field(gt=0, le=100_000)
-
-
-class SetStreakRequest(BaseModel):
-    days: int = Field(ge=0, le=30)
 
 
 class DevLoreRequest(BaseModel):
@@ -63,28 +57,20 @@ async def bootstrap(session: SessionDep) -> TokenResponse:
     return TokenResponse(access_token=create_access_token(player.id), player_id=player.id)
 
 
-@router.post("/grant-distance", response_model=PlayerResponse)
-async def grant_distance(
-    body: GrantDistanceRequest,
+@router.post("/grant-distance", response_model=ProgressResponse)
+async def grant_distance_dev(
+    body: DistanceRequest,
     player: CurrentPlayer,
     session: SessionDep,
-) -> PlayerResponse:
-    stats = await _require_stats(session, player)
-    stats.total_distance_m += body.meters
-    await session.commit()
-    return _player_response(player, stats)
+) -> ProgressResponse:
+    view = await grant_distance(session, player, body.meters)
+    return to_progress_response(player, view)
 
 
-@router.post("/set-streak", response_model=PlayerResponse)
-async def set_streak(
-    body: SetStreakRequest,
-    player: CurrentPlayer,
-    session: SessionDep,
-) -> PlayerResponse:
-    stats = await _require_stats(session, player)
-    stats.current_encounter_streak_days = body.days
-    await session.commit()
-    return _player_response(player, stats)
+@router.post("/close-day", response_model=ProgressResponse)
+async def close_day_dev(player: CurrentPlayer, session: SessionDep) -> ProgressResponse:
+    view = await close_progress_day(session, player)
+    return to_progress_response(player, view)
 
 
 @router.post("/reset-lore")
@@ -125,24 +111,4 @@ async def dev_deliver_lore(
         trigger_type=fragment.trigger_type,
         trigger_value=fragment.trigger_value,
         text=fragment.text,
-    )
-
-
-async def _require_stats(session: AsyncSession, player: Player) -> PlayerStats:
-    if player.stats is not None:
-        return player.stats
-    stats = PlayerStats(player_id=player.id)
-    session.add(stats)
-    await session.flush()
-    return stats
-
-
-def _player_response(player: Player, stats: PlayerStats) -> PlayerResponse:
-    return PlayerResponse(
-        id=player.id,
-        display_name=player.display_name,
-        active_world_id=player.active_world_id,
-        total_distance_m=stats.total_distance_m,
-        current_encounter_streak_days=stats.current_encounter_streak_days,
-        affliction_status=stats.affliction_status,
     )

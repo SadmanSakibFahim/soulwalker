@@ -17,7 +17,7 @@ After startup you get a dark, serif UI with four tabs. Labels come from the worl
 | a Shared Vigil | Nearby partners (not wired yet) |
 | a Failed Waking | Anonymous death markers (fixed type, no free text) |
 
-With **dev mode** on, an amber `DEV` bar and a science FAB appear. Use those to add kilometres and lore without walking or HealthKit.
+With **dev mode** on, an amber `DEV` bar and a science FAB appear. Use those to add kilometres and lore on the simulator. On an iPhone, **Sync Apple Health** reads Steps and Walking + Running Distance. See [`guide.md`](../../guide.md).
 
 ---
 
@@ -158,11 +158,13 @@ API_BASE=http://10.0.2.2:8000 ./scripts/run-mobile-dev.sh -d emulator-5554
 
 1. Run the API with `--host 0.0.0.0` (already in `scripts/run-api.sh`).
 2. Phone and Mac on the same Wi-Fi.
-3. Pass your Mac’s LAN IP:
+3. Pass your Mac’s LAN IP. `--release` lets you unplug and pocket the phone:
 
 ```bash
-API_BASE=http://192.168.1.20:8000 ./scripts/run-mobile-dev.sh
+API_BASE=http://192.168.1.20:8000 ./scripts/run-mobile-dev.sh --release
 ```
+
+On **a Held Breath**, **Connect API**, then allow **Steps** and **Walking + Running Distance**. That banks today's Apple Health distance, including steps taken before the app was opened. **Start walk** is the motion-coprocessor fallback. See [`guide.md`](../../guide.md).
 
 ---
 
@@ -175,13 +177,13 @@ All hacks live in two folders so they are easy to rip out:
 
 They are **off** unless you opt in (`SOULWALKER_DEV=true` on the client, `DEV_MODE=true` on the API).
 
-The panel works **offline**. Connect API is optional; if Uvicorn is down, +km / lore / death markers still update the UI from local state.
+The panel works **offline**. Connect API is optional; if Uvicorn is down, +km / Close day / lore / death markers still update the UI from local state. The open day is UTC until a device-local date exists.
 
 | Control | What it does |
 |---|---|
 | Connect API | Creates playtest user `devwalker` / `devdevdev8` and stores a JWT |
-| +1 / +3 / +5 km | Adds distance (syncs to `player_stats` if connected) |
-| +1 streak day | Bumps encounter streak |
+| +1 / +3 / +5 km | Adds distance for the open day. 5 km counts the day. 3 km and 5 km unlock armaments. Syncs if connected |
+| Close day | Ends the open day. A counted day keeps the streak. A missed day, while a streak is active, resets that attempt only |
 | Pull lore | Fetches a fragment from the API, or cycles bundled sample lines |
 | Drop death marker | Adds a fixed-type marker (`Died here, attempt #N`) on a Failed Waking |
 | Reset local | Clears in-memory walk / markers / lore (does not wipe the DB) |
@@ -194,8 +196,8 @@ Open **a Held Breath** after +km to see `Walked X.X km`. Open **a Failed Waking*
 |---|---|---|
 | GET | `/v1/dev/status` | none |
 | POST | `/v1/dev/bootstrap` | none — upserts `devwalker` |
-| POST | `/v1/dev/grant-distance` | Bearer `{ "meters": 3000 }` |
-| POST | `/v1/dev/set-streak` | Bearer `{ "days": 2 }` |
+| POST | `/v1/dev/grant-distance` | Bearer `{ "meters": 3000 }` — same rules as `/v1/progress/distance` |
+| POST | `/v1/dev/close-day` | Bearer — same rules as `/v1/progress/close-day` |
 | POST | `/v1/dev/deliver-lore` | Bearer `{ "trigger_type": "daily_ambient" }` |
 | POST | `/v1/dev/reset-lore` | Bearer — clears seen fragments |
 
@@ -245,4 +247,4 @@ Runs Ruff, MyPy, content lint, pytest, `flutter analyze`, and `flutter test`.
 
 ## What is not here yet
 
-HealthKit / Health Connect, live leaderboards, geo matching, Rive, and post-processing shaders are later slices. Dev hacks fake the numbers those systems will eventually write.
+Health Connect, live leaderboards, geo matching, Rive, and post-processing shaders are later slices. iOS reads Apple Health (steps and walking distance) and banks it through the encounter rules. Android still uses the motion step counter. Dev hacks can still add kilometres by hand.

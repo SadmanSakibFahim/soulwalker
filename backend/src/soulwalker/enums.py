@@ -20,3 +20,12 @@ class AfflictionStatus(IntEnum):
 
     NONE = 0
     ACTIVE = 1
+
+
+class CheckpointReason(IntEnum):
+    """Why a rest-point row was written. Stored as SMALLINT."""
+
+    ORIGIN = 0
+    ARMAMENT = 1
+    ENCOUNTER_COMPLETED = 2
+    RETURN = 3

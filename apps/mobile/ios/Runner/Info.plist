@@ -4,6 +4,17 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+	<key>NSMotionUsageDescription</key>
+	<string>Soulwalker uses motion data to measure how far you walked.</string>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Soulwalker reads your steps and walking distance from Apple Health so a day you already walked can count.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Soulwalker sends the walk to your computer on this Wi-Fi.</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

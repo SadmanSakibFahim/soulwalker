@@ -10,12 +10,26 @@ class AppShell extends StatefulWidget {
     required this.terms,
     this.progress = const WalkProgress(),
     this.markers = const <DeathMarkerView>[],
+    this.walking = false,
+    this.walkNote = '',
+    this.healthNote = '',
+    this.onSyncHealth,
+    this.onStartWalk,
+    this.onSyncWalk,
+    this.onEndWalk,
     super.key,
   });
 
   final TerminologyResolver terms;
   final WalkProgress progress;
   final List<DeathMarkerView> markers;
+  final bool walking;
+  final String walkNote;
+  final String healthNote;
+  final VoidCallback? onSyncHealth;
+  final VoidCallback? onStartWalk;
+  final VoidCallback? onSyncWalk;
+  final VoidCallback? onEndWalk;
 
   @override
   State<AppShell> createState() => _AppShellState();
@@ -28,7 +42,17 @@ class _AppShellState extends State<AppShell> {
   Widget build(BuildContext context) {
     final TerminologyResolver terms = widget.terms;
     final List<Widget> pages = <Widget>[
-      CheckpointScreen(terms: terms, progress: widget.progress),
+      CheckpointScreen(
+        terms: terms,
+        progress: widget.progress,
+        walking: widget.walking,
+        walkNote: widget.walkNote,
+        healthNote: widget.healthNote,
+        onSyncHealth: widget.onSyncHealth,
+        onStartWalk: widget.onStartWalk,
+        onSyncWalk: widget.onSyncWalk,
+        onEndWalk: widget.onEndWalk,
+      ),
       StandingsScreen(terms: terms, progress: widget.progress),
       SummonsScreen(terms: terms),
       DeathMarkerScreen(terms: terms, markers: widget.markers),

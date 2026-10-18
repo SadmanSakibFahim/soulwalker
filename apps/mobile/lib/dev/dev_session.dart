@@ -3,6 +3,8 @@ library;
 
 import 'package:flutter/foundation.dart';
 
+import '../domain/activity_sync.dart';
+import '../domain/encounter_loop.dart';
 import '../domain/progress.dart';
 import 'dev_api.dart';
 import 'sample_lore.dart';
@@ -33,13 +35,32 @@ class DevSession extends ChangeNotifier {
     final bool ok = await _api.bootstrap();
     apiConnected = ok;
     status = ok ? 'connected as playtest player' : 'API up but bootstrap failed';
+    if (ok) {
+      final WalkProgress? remote = await _api.fetchProgress();
+      if (remote != null) {
+        progress = remote;
+      }
+    }
     notifyListeners();
   }
 
+  void noteLocalMeters(int meters) {
+    progress = recordDistance(progress, meters);
+    notifyListeners();
+  }
+
+  Future<bool> noteServerMeters(int meters) async {
+    final WalkProgress? remote = await _api.grantDistance(meters);
+    if (remote == null) {
+      return false;
+    }
+    progress = remote;
+    notifyListeners();
+    return true;
+  }
+
   Future<void> addMeters(int meters) async {
-    progress = progress.copyWith(
-      totalDistanceM: progress.totalDistanceM + meters,
-    );
+    progress = recordDistance(progress, meters);
     notifyListeners();
     final WalkProgress? remote = await _api.grantDistance(meters);
     if (remote != null) {
@@ -48,10 +69,25 @@ class DevSession extends ChangeNotifier {
     }
   }
 
-  Future<void> addStreakDay() async {
-    progress = progress.copyWith(streakDays: progress.streakDays + 1);
+  Future<void> syncActivity(List<DayActivity> days) async {
+    if (apiConnected) {
+      final WalkProgress? remote = await _api.syncActivity(days);
+      if (remote != null) {
+        progress = remote;
+        status = 'connected — Apple Health banked';
+        notifyListeners();
+        return;
+      }
+      status = 'connected, but Apple Health did not save. The numbers below are on this phone only.';
+    }
+    progress = applyActivityDays(progress, days);
     notifyListeners();
-    final WalkProgress? remote = await _api.setStreak(progress.streakDays);
+  }
+
+  Future<void> closeDay() async {
+    progress = closeProgressDay(progress);
+    notifyListeners();
+    final WalkProgress? remote = await _api.closeDay();
     if (remote != null) {
       progress = remote;
       notifyListeners();
