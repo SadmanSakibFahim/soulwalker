@@ -1,6 +1,6 @@
 # Handover Log
 
-Last updated: 2026-10-18
+Last updated: 2026-10-19
 
 ## Current state
 
@@ -18,6 +18,8 @@ V1 foundation, playable encounter loop, and **Apple Health sync**. Flutter + Fas
 - Rest-point rows in `player_checkpoints` (origin, armament, encounter completed, return). The UI reads live stats; death does not roll distance backward.
 - Dev panel: `+km` and `Close day` apply the rules locally, and sync to the API when connected. `Close day` is the simulator clock. On an iPhone, leave it alone.
 - Apple Health (iOS): **Sync Apple Health** reads Steps and Walking + Running Distance for the device-local day and posts cumulative meters to `POST /v1/progress/activity`. A later local date closes the days before it. The first sync counts today only (including steps taken before the app was opened). Later syncs catch up from the open day through today, capped at 31 days. Walking distance wins; otherwise 0.78 m/step. Channel `soulwalker/health`. Entitlement: `apps/mobile/ios/Runner/Runner.entitlements`.
+- Local walkthrough: `scripts/demo.sh` starts the stack and walks those routes with a new `demo…` player. It does not change `devwalker`.
+- Browser UI: `apps/mobile/web/` so the same Flutter shell can run in Chrome while the Xcode license is still unaccepted. iOS and Android targets are unchanged.
 - Pocket walk remains the fallback (`soulwalker/motion`). iPhone motion-coprocessor distance, Android step estimate. Using it together with Apple Health on the same outing can count those steps twice.
 - Local Docker has been migrated to `0002_encounter_loop` and seeded (`w_endless_paralysis`). Postgres was left running.
 
@@ -35,6 +37,8 @@ V1 foundation, playable encounter loop, and **Apple Health sync**. Flutter + Fas
 | Product spec | `docs/specs/v1.md` |
 | Tomorrow playtest | `guide.md` |
 | Morning script | `scripts/morning.sh` |
+| Local walkthrough | `scripts/demo.sh` |
+| Browser UI | `apps/mobile/web/` |
 | Runbook | `docs/manual/getting-started.md` |
 | Rules | `.cursor/rules/*.mdc` |
 | API entry | `backend/src/soulwalker/main.py` |
@@ -75,6 +79,23 @@ Tomorrow: [`guide.md`](../guide.md).
 ./scripts/morning.sh
 # then the phone command it prints, after the Xcode license line if it prints one
 ```
+
+See the current API with a fresh sample walker (world pack, auth, armaments, a failed attempt, activity sync, lore):
+
+```bash
+./scripts/demo.sh
+```
+
+See the four screens in a browser (the iOS simulator still needs the Xcode license):
+
+```bash
+cd apps/mobile
+flutter run -d chrome --web-port 8090 \
+  --dart-define=SOULWALKER_DEV=true \
+  --dart-define=API_BASE=http://127.0.0.1:8000
+```
+
+`flutter` calls `xcodebuild` on startup. Until the license is accepted, that command exits before Chrome opens.
 
 Simulator: `./scripts/morning.sh` then `./scripts/run-mobile-dev.sh`. `+km` and **Close day** play the loop. **Sync Apple Health** reports that Health is not on the simulator.
 
